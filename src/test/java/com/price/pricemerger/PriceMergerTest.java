@@ -26,7 +26,7 @@ public class PriceMergerTest {
         List<Price> acualValue = PriceMerger.mergePrices(prices,prices);
 //        assertEquals(expectedValue,acualValue);
         assertSame(expectedValue,acualValue);
-        
+
     }
 
 }
