@@ -114,7 +114,6 @@ public class PriceMerger {
                     && oldPrice.getEnd().compareTo(newPrice.getEnd()) <= 0) {
                 if (oldPrice.getValue() == newPrice.getValue()) {
                     newPrice.setBegin(oldPrice.getBegin());
-                    newPrice = getNextPrice(newPriceIter);
                 } else {
                     oldPrice.setEnd(newPrice.getBegin());
                     result.add(oldPrice);

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 //@ToString(exclude = {"id", "product_code", "number", "depart", "begin", "end", "value"})
 @AllArgsConstructor(staticName = "of")
+@EqualsAndHashCode(exclude = {"id"})
 @Data public class Price {
 
     @NonNull private long id; //id in BD
