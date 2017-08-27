@@ -1,6 +1,7 @@
 package com.price.pricemerger;
 
 import com.price.Price;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,8 +10,7 @@ import static java.util.stream.Collectors.groupingBy;
 
 public class PriceMerger {
 
-    public static List<Price> mergePrices(List<Price> oldPrice, List<Price> newPrice){
-
+    public static List<Price> mergePrices(@NonNull List<Price> oldPrice, @NonNull List<Price> newPrice) {
 
         TreeMap<Price.ProductNumDep, TreeSet<Price>> newMap = getMapList(newPrice);
         TreeMap<Price.ProductNumDep, TreeSet<Price>> oldMap = getMapList(oldPrice);
@@ -92,8 +92,8 @@ public class PriceMerger {
                     && oldPrice.getBegin().compareTo(newPrice.getEnd()) <= 0   // |   |      new time
                     && oldPrice.getEnd().compareTo(newPrice.getEnd()) > 0) {
                 if (oldPrice.getValue() == newPrice.getValue()) {
-                    newPrice.setEnd(oldPrice.getEnd());
-                    oldPrice = getNextPrice(oldPriceIter);
+                    oldPrice.setBegin(newPrice.getBegin());
+                    newPrice = getNextPrice(newPriceIter);
                 } else {
                     oldPrice.setBegin(newPrice.getEnd());
                     result.add(newPrice);
@@ -105,10 +105,14 @@ public class PriceMerger {
 
             } else if (oldPrice.getBegin().compareTo(newPrice.getBegin()) < 0 //   |        |  old time  4var
                     && oldPrice.getEnd().compareTo(newPrice.getEnd()) > 0) {  //     |    |    new time
-                Price oldResultPrice = new Price(oldPrice);
-                oldResultPrice.setEnd(newPrice.getBegin());
-                result.add(oldResultPrice);
-                oldPrice.setBegin(newPrice.getEnd()); //reduce to 2 var
+                if (oldPrice.getValue() == newPrice.getValue()) {
+                    newPrice = getNextPrice(newPriceIter);
+                } else {
+                    Price oldResultPrice = new Price(oldPrice);
+                    oldResultPrice.setEnd(newPrice.getBegin());
+                    result.add(oldResultPrice);
+                    oldPrice.setBegin(newPrice.getEnd()); //reduce to 2 var
+                }
             } else if (oldPrice.getBegin().compareTo(newPrice.getBegin()) < 0 //   |   |     old time  5var
                     && oldPrice.getEnd().compareTo(newPrice.getBegin()) >= 0  //     |   |   new time
                     && oldPrice.getEnd().compareTo(newPrice.getEnd()) <= 0) {
@@ -137,13 +141,13 @@ public class PriceMerger {
 
         Iterator<Price> PriceIter = newPrices.iterator();
         Price firstPrice = PriceIter.next();
-        Price secondPrice = PriceIter.next();
+        Price secondPrice;
 
         do {
+            secondPrice = PriceIter.next();
             if(firstPrice.getEnd().compareTo(secondPrice.getBegin()) > 0)
                 throw new PriceDateCollisionException("In one time can be only one price on this number and department");
             firstPrice = secondPrice;
-            secondPrice = PriceIter.next();
         }while (PriceIter.hasNext());
     }
 
