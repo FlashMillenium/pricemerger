@@ -23,9 +23,9 @@ long value;
 __In one time only one price can be active on certain product, price number and department number__
 
 Rule for merge:
-- if old price don't have price for product or price don't collide in his period, than simply add new price
+- if old list don't have price for this product, or period of the prices don't collide, then add new price for product
 - if collision detected, resolve this on this rule:
-	* if price value is the same, expand the period
+	* if price value for product is the same, expand the period
 	* if price value differ, create new price and shrink period of the old price
 
 Example of merge:
